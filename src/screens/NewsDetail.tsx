@@ -1,35 +1,77 @@
 import React from 'react'
-import { View, Text, Image } from 'react-native'
-import { useRoute } from '@react-navigation/native'
+import { View, Text, Image, TouchableOpacity, Modal } from 'react-native'
 import tw from 'twrnc'
+import { fonts } from '../styles/global'
 import moment from 'moment'
+import NewsImageModal from '../component/NewsImageModal'
 
-const NewsDetail = () => {
+interface NewsDetailProps {
+  route: any
+}
 
-  const route = useRoute()
+interface NewsDetailState {
+  modalVisible: boolean
+}
 
-  const { id, title, content, urlToImage,date }: any = route.params
+class NewsDetail extends React.PureComponent<NewsDetailProps, NewsDetailState> {
 
-  return (
-    <View  style={tw`flex-1 flex-col items-center w-full px-5 py-3 bg-[#272E32]`}>
-      <View  style={tw`flex-col items-center w-full my-10`}>
-        <Text style={tw`text-3xl text-center text-white`}>News Detail</Text>
-        <Text style={tw`text-xl text-center text-[#82AC6A]`}>{moment(date).format('LL')}</Text>
-      </View >
-      <Text>{id}</Text>
-      <Text style={tw`text-xl text-left text-white`}>{title}</Text>
-      <View style={tw`flex-col w-full`}>
-        <Image
-          style={tw`w-full h-[10rem] rounded-xl my-5`}
-          resizeMode="cover"
-          source={{
-            uri: `${urlToImage}`
-          }}
-        />
-        <Text style={tw`text-base text-left text-white`}>{content}</Text>
+  constructor(props: any) {
+    super(props)
+    this.state = {
+      modalVisible: false
+    }
+  }
+
+  render() {
+
+    const { route } = this.props
+
+    const { id, title, content, urlToImage, date }: any = route.params
+
+    return (
+      <View  style={tw`flex-1 flex-col items-center w-full px-5 py-3 bg-[#272E32]`}>
+        <View  style={tw`flex-col items-center w-full my-10`}>
+          <Text style={[tw`text-3xl text-center text-white`, fonts.fontRalewayBold]}>News Detail</Text>
+          <Text style={[tw`text-xl text-center text-[#82AC6A]`, fonts.fontRalewayLight]}>{moment(date).format('LL')}</Text>
+        </View >
+        <Text>{id}</Text>
+        <Text style={[tw`text-xl text-left text-white`, fonts.fontRalewaySemiBold]}>{title}</Text>
+        <View style={tw`flex-col w-full`}>
+          <TouchableOpacity
+            onPress={() => {
+              this.setState({
+                modalVisible: true
+              })
+            }}
+          >
+            <Image
+              style={tw`w-full h-[10rem] rounded-xl my-5`}
+              resizeMode="cover"
+              source={{
+                uri: `${urlToImage}`
+              }}
+            />
+          </TouchableOpacity>
+          <Text style={[tw`text-base text-left text-white`, fonts.fontRaleway]}>{content}</Text>
+        </View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.state.modalVisible}
+          onRequestClose={() => {
+            this.setState({
+              modalVisible: false
+            })
+          }}   
+        >
+          <NewsImageModal
+            imageUrl={urlToImage}
+            title={title}
+          />
+        </Modal>
       </View>
-    </View>
-  )
+    )
+  }
 }
 
 export default NewsDetail 
